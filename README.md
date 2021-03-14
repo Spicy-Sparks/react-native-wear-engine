@@ -15,7 +15,6 @@ import WearEngine from "react-native-wear-engine";
 
 // ...
 
-const result = await WearEngine.multiply(3, 7);
 ```
 
 ## Contributing
