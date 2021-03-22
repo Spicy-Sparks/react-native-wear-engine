@@ -37,7 +37,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
 
     @ReactMethod
     fun unregisterReceiver(){
-      HiWear.getP2pClient(currentActivity).unregisterReceiver(receiver)
+      HiWear.getP2pClient(reactApplicationContext).unregisterReceiver(receiver)
         .addOnSuccessListener {
           // Succeed in cancelling the registration of a listener for the callback method of messages sent by the phone
           sendEvent("onUnregisterReceiver", true)
@@ -53,7 +53,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
 
       // Step 1: Obtain the DeviceClient object.
       //This indicates the Context object of the app.
-      val deviceClient : DeviceClient = HiWear.getDeviceClient(currentActivity)
+      val deviceClient : DeviceClient = HiWear.getDeviceClient(reactApplicationContext)
 
       // Step 2: Call the hasAvailableDevices method to query whether users have wearable devices.
       deviceClient.hasAvailableDevices().addOnSuccessListener(object : OnSuccessListener<Boolean?> {
@@ -73,7 +73,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
     fun requestPermission() {
       // Step 1: Obtain the AuthClient object.
       //This indicates the Context object of the app.
-      val authClient = HiWear.getAuthClient(currentActivity)
+      val authClient = HiWear.getAuthClient(reactApplicationContext)
 
       // Step 2: Define the callback object for user authorization.
       val authCallback: AuthCallback = object : AuthCallback {
@@ -114,7 +114,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
     @ReactMethod
     fun checkPermission() {
       // Step 1: Obtain the AuthClient object.
-      val authClient = HiWear.getAuthClient(currentActivity)
+      val authClient = HiWear.getAuthClient(reactApplicationContext)
 
       // Step 2: Call the checkPermission method to check whether the permission is granted.
       authClient.checkPermission(Permission.DEVICE_MANAGER).addOnSuccessListener {
@@ -150,7 +150,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
   @ReactMethod
   fun getDevices() {
     // Step 1: Obtain the DeviceClient object.
-    val deviceClient = HiWear.getDeviceClient(currentActivity)
+    val deviceClient = HiWear.getDeviceClient(reactApplicationContext)
 
     // Step 2: Obtain the list of paired devices
     deviceClient.bondedDevices
@@ -182,7 +182,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
     @ReactMethod
     fun setAndPingConnectedDevice(peerPkgName: String, peerFingerPrint: String) {
       // Step 1: Obtain the DeviceClient object.
-      val deviceClient = HiWear.getDeviceClient(currentActivity)
+      val deviceClient = HiWear.getDeviceClient(reactApplicationContext)
 
       // Step 2: Obtain the list of paired devices
       deviceClient.bondedDevices
@@ -198,7 +198,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
           }
 
           // Step 2: Obtain the point-to-point communication object
-          p2pClient = HiWear.getP2pClient(currentActivity)
+          p2pClient = HiWear.getP2pClient(reactApplicationContext)
 
           // Step 3: Set the package name of the app on the wearable device that needs communications
           p2pClient.setPeerPkgName(peerPkgName)
