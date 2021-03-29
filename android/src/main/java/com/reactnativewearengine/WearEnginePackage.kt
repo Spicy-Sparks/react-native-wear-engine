@@ -9,12 +9,12 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.bridge.JavaScriptModule
 
-class WearEnginePackage : ReactPackage {
-    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return Arrays.asList<NativeModule>(WearEngineModule(reactContext))
-    }
+class WearEnginePackage: ReactPackage {
+  override fun createNativeModules(reactContext: ReactApplicationContext): List < NativeModule > {
+    return Arrays.asList<NativeModule>(WearEngineModule(reactContext))
+  }
 
-    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-        return emptyList<ViewManager<*, *>>()
-    }
+  override fun createViewManagers(reactContext: ReactApplicationContext): List < ViewManager < * , * >> {
+    return emptyList<ViewManager<*, *>>()
+  }
 }
