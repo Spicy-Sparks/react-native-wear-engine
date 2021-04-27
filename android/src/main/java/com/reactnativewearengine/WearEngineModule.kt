@@ -12,6 +12,7 @@ import com.huawei.wearengine.device.DeviceClient
 import com.huawei.wearengine.p2p.*
 import java.io.File
 import java.util.*
+import java.util.UUID.randomUUID
 
 
 class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -242,7 +243,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
     }
 
   @ReactMethod
-  fun sendMessage(messageStr: String) {
+  fun sendMessage(messageStr: String, promise: Promise) {
 
     if(p2pClient == null)
       sendEvent("onSendResult", false)
@@ -252,13 +253,15 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
     val builder: Message.Builder = Message.Builder()
     builder.setPayload(messageStr.toByteArray())
     val sendMessage: Message = builder.build()
+    val messageId = randomUUID().toString()
 
     val sendCallback: SendCallback = object : SendCallback {
       override fun onSendResult(resultCode: Int) {
         val payload = Arguments.createMap()
-        payload.putBoolean("status", true);
-        payload.putInt("code", resultCode);
-        sendEvent("onSendResult", payload)
+          payload.putBoolean("status", true)
+          payload.putString("messageId", messageId)
+          payload.putInt("code", resultCode)
+          sendEvent("onSendResult", payload)
       }
         override fun onSendProgress(progress: Long) {
             sendEvent("onSendProgress", progress)
@@ -272,14 +275,19 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         .addOnFailureListener(OnFailureListener {
             //Related processing logic for third-party apps after the send command fails to run
             val payload = Arguments.createMap()
-            payload.putBoolean("status", false);
+            payload.putBoolean("status", false)
+            payload.putString("messageId", messageId)
             sendEvent("onSendResult", payload)
         })
     }
+
+      val payload = Arguments.createMap()
+      payload.putString("messageId", messageId)
+      promise.resolve(payload)
   }
 
     @ReactMethod
-    fun sendFile(filePath: String) {
+    fun sendFile(filePath: String, promise: Promise) {
 
         if(p2pClient == null)
             sendEvent("onSendResult", false)
@@ -287,6 +295,7 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         // Step 5: Send short messages from third-party apps on the phone to those on the wearable device
         // Build a Message object
         val sendFile = File(filePath)
+        val messageId = randomUUID().toString()
         val builder = Message.Builder()
         builder.setPayload(sendFile)
         val fileMessage = builder.build()
@@ -294,8 +303,9 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         val sendCallback: SendCallback = object : SendCallback {
             override fun onSendResult(resultCode: Int) {
                 val payload = Arguments.createMap()
-                payload.putBoolean("status", true);
-                payload.putInt("code", resultCode);
+                payload.putBoolean("status", true)
+                payload.putString("messageId", messageId)
+                payload.putInt("code", resultCode)
                 sendEvent("onSendResult", payload)
             }
             override fun onSendProgress(progress: Long) {
@@ -313,14 +323,19 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
                     .addOnFailureListener(OnFailureListener {
                         //Related processing logic for third-party apps after the send command fails to run
                         val payload = Arguments.createMap()
-                        payload.putBoolean("status", false);
+                        payload.putBoolean("status", false)
+                        payload.putString("messageId", messageId)
                         sendEvent("onSendResult", payload)
                     })
         }
+
+        val payload = Arguments.createMap()
+        payload.putString("messageId", messageId)
+        promise.resolve(payload)
     }
 
     @ReactMethod
-    fun cancelFile(filePath: String) {
+    fun cancelFile(filePath: String, promise: Promise) {
 
         if(p2pClient == null)
             sendEvent("onSendResult", false)
