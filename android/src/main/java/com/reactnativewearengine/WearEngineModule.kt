@@ -257,14 +257,18 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
 
     val sendCallback: SendCallback = object : SendCallback {
       override fun onSendResult(resultCode: Int) {
-        val payload = Arguments.createMap()
+          val payload = Arguments.createMap()
           payload.putBoolean("status", true)
           payload.putString("messageId", messageId)
           payload.putInt("code", resultCode)
           sendEvent("onSendResult", payload)
       }
         override fun onSendProgress(progress: Long) {
-            sendEvent("onSendProgress", progress)
+            val payload = Arguments.createMap()
+            payload.putBoolean("status", true);
+            payload.putDouble("progress", progress.toDouble())
+            payload.putString("messageId", messageId)
+            sendEvent("onSendProgress", payload)
         }
     }
     if (connectedDevice != null && connectedDevice!!.isConnected && sendMessage != null && sendCallback != null) {
@@ -311,7 +315,8 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
             override fun onSendProgress(progress: Long) {
                 val payload = Arguments.createMap()
                 payload.putBoolean("status", true);
-                payload.putDouble("progress", progress.toDouble());
+                payload.putDouble("progress", progress.toDouble())
+                payload.putString("messageId", messageId)
                 sendEvent("onSendProgress", payload)
             }
         }
