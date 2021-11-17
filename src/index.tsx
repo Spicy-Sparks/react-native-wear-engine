@@ -39,7 +39,7 @@ WearEngine.addEventListener = function (
 };
 
 WearEngine.removeEventListener = function (listener: EmitterSubscription) {
-  return emitter.removeSubscription(listener);
+  return listener.remove && listener.remove();
 };
 
 WearEngine.removeAllListeners = function (event: string) {
