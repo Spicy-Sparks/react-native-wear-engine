@@ -5,7 +5,7 @@ WearEngine.addEventListener = function (event, listener) {
     return emitter.addListener(event, listener);
 };
 WearEngine.removeEventListener = function (listener) {
-    return emitter.removeSubscription(listener);
+    return listener.remove && listener.remove()
 };
 WearEngine.removeAllListeners = function (event) {
     return emitter.removeAllListeners(event);
