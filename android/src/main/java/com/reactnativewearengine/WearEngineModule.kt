@@ -148,37 +148,37 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
       }*/
     }
 
-  @ReactMethod
-  fun getDevices() {
-    // Step 1: Obtain the DeviceClient object.
-    val deviceClient = HiWear.getDeviceClient(reactApplicationContext)
+    @ReactMethod
+    fun getDevices() {
+      // Step 1: Obtain the DeviceClient object.
+      val deviceClient = HiWear.getDeviceClient(reactApplicationContext)
 
-    // Step 2: Obtain the list of paired devices
-    deviceClient.bondedDevices
-      .addOnSuccessListener { devices -> // Obtained device list
-        deviceList = devices;
+      // Step 2: Obtain the list of paired devices
+      deviceClient.bondedDevices
+        .addOnSuccessListener { devices -> // Obtained device list
+          deviceList = devices;
 
-        val payload = Arguments.createArray()
+          val payload = Arguments.createArray()
 
-        for (device in deviceList)
-        {
-          val deviceMap = Arguments.createMap()
-          deviceMap.putString("name", device.name)
-          deviceMap.putString("model", device.model)
-          deviceMap.putString("uuid", device.uuid)
-          deviceMap.putBoolean("isConnected", device.isConnected)
-          deviceMap.putInt("productType", device.productType)
+          for (device in deviceList)
+          {
+            val deviceMap = Arguments.createMap()
+            deviceMap.putString("name", device.name)
+            deviceMap.putString("model", device.model)
+            deviceMap.putString("uuid", device.uuid)
+            deviceMap.putBoolean("isConnected", device.isConnected)
+            deviceMap.putInt("productType", device.productType)
 
-          payload.pushMap(deviceMap)
+            payload.pushMap(deviceMap)
+          }
+
+          sendEvent("onDevicesResult", payload)
         }
-
-        sendEvent("onDevicesResult", payload)
-      }
-      .addOnFailureListener {
-        // Process logic when the device list fails to be obtained
-        sendEvent("onDevicesResult", false)
-      }
-  }
+        .addOnFailureListener {
+          // Process logic when the device list fails to be obtained
+          sendEvent("onDevicesResult", false)
+        }
+    }
 
     @ReactMethod
     fun setAndPingConnectedDevice(peerPkgName: String, peerFingerPrint: String) {
@@ -242,53 +242,53 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         }
     }
 
-  @ReactMethod
-  fun sendMessage(messageStr: String, promise: Promise) {
+    @ReactMethod
+    fun sendMessage(messageStr: String, promise: Promise) {
 
-    if(p2pClient == null)
-      sendEvent("onSendResult", false)
+        if(p2pClient == null)
+          sendEvent("onSendResult", false)
 
-    // Step 5: Send short messages from third-party apps on the phone to those on the wearable device
-    // Build a Message object
-    val builder: Message.Builder = Message.Builder()
-    builder.setPayload(messageStr.toByteArray())
-    val sendMessage: Message = builder.build()
-    val messageId = randomUUID().toString()
+        // Step 5: Send short messages from third-party apps on the phone to those on the wearable device
+        // Build a Message object
+        val builder: Message.Builder = Message.Builder()
+        builder.setPayload(messageStr.toByteArray())
+        val sendMessage: Message = builder.build()
+        val messageId = randomUUID().toString()
 
-    val sendCallback: SendCallback = object : SendCallback {
-      override fun onSendResult(resultCode: Int) {
-          val payload = Arguments.createMap()
-          payload.putBoolean("status", true)
-          payload.putString("messageId", messageId)
-          payload.putInt("code", resultCode)
-          sendEvent("onSendResult", payload)
-      }
-        override fun onSendProgress(progress: Long) {
-            val payload = Arguments.createMap()
-            payload.putBoolean("status", true);
-            payload.putDouble("progress", progress.toDouble())
-            payload.putString("messageId", messageId)
-            sendEvent("onSendProgress", payload)
+        val sendCallback: SendCallback = object : SendCallback {
+          override fun onSendResult(resultCode: Int) {
+              val payload = Arguments.createMap()
+              payload.putBoolean("status", true)
+              payload.putString("messageId", messageId)
+              payload.putInt("code", resultCode)
+              sendEvent("onSendResult", payload)
+          }
+            override fun onSendProgress(progress: Long) {
+                val payload = Arguments.createMap()
+                payload.putBoolean("status", true);
+                payload.putDouble("progress", progress.toDouble())
+                payload.putString("messageId", messageId)
+                sendEvent("onSendProgress", payload)
+            }
         }
-    }
-    if (connectedDevice != null && connectedDevice!!.isConnected && sendMessage != null && sendCallback != null) {
-      p2pClient.send(connectedDevice, sendMessage, sendCallback)
-        .addOnSuccessListener(OnSuccessListener<Void?> {
-            //Related processing logic for third-party apps after the send command runs
-        })
-        .addOnFailureListener(OnFailureListener {
-            //Related processing logic for third-party apps after the send command fails to run
-            val payload = Arguments.createMap()
-            payload.putBoolean("status", false)
-            payload.putString("messageId", messageId)
-            sendEvent("onSendResult", payload)
-        })
-    }
+        if (connectedDevice != null && connectedDevice!!.isConnected && sendMessage != null && sendCallback != null) {
+          p2pClient.send(connectedDevice, sendMessage, sendCallback)
+            .addOnSuccessListener(OnSuccessListener<Void?> {
+                //Related processing logic for third-party apps after the send command runs
+            })
+            .addOnFailureListener(OnFailureListener {
+                //Related processing logic for third-party apps after the send command fails to run
+                val payload = Arguments.createMap()
+                payload.putBoolean("status", false)
+                payload.putString("messageId", messageId)
+                sendEvent("onSendResult", payload)
+            })
+        }
 
-      val payload = Arguments.createMap()
-      payload.putString("messageId", messageId)
-      promise.resolve(payload)
-  }
+        val payload = Arguments.createMap()
+        payload.putString("messageId", messageId)
+        promise.resolve(payload)
+    }
 
     @ReactMethod
     fun sendFile(filePath: String, promise: Promise) {
@@ -384,9 +384,19 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         }
     }
 
-  fun sendEvent(eventName: String, payload: Any?){
-    reactApplicationContext
-      .getJSModule(RCTDeviceEventEmitter::class.java)
-      .emit(eventName, payload)
-  }
+    fun sendEvent(eventName: String, payload: Any?){
+      reactApplicationContext
+        .getJSModule(RCTDeviceEventEmitter::class.java)
+        .emit(eventName, payload)
+    }
+
+    @ReactMethod
+    public fun addListener(eventName: String) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public fun removeListeners(eventName: String) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
 }
