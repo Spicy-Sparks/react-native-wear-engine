@@ -389,14 +389,4 @@ class WearEngineModule(reactContext: ReactApplicationContext) : ReactContextBase
         .getJSModule(RCTDeviceEventEmitter::class.java)
         .emit(eventName, payload)
     }
-
-    @ReactMethod
-    public fun addListener(eventName: String) {
-        // Keep: Required for RN built in Event Emitter Calls.
-    }
-
-    @ReactMethod
-    public fun removeListeners(eventName: String) {
-        // Keep: Required for RN built in Event Emitter Calls.
-    }
 }
