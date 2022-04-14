@@ -1,6 +1,6 @@
 {
   "name": "react-native-wear-engine",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "React Native Huawei Wear Engine",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
